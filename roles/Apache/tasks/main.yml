@@ -4,10 +4,25 @@
     name: apache2
     state: present
     update_cache: yes
+  become: yes
+
+- name: Create virtual host file
+  template:
+    src: apache-vhost.conf.j2
+    dest: /etc/apache2/sites-available/angular-app.conf
+  become: yes
+  notify: Restart Apache
+
+- name: Enable virtual host
+  command: a2ensite angular-app.conf
+  become: yes
+  notify: Restart Apache
 
 - name: Ensure Apache is running
   service:
     name: apache2
     state: started
     enabled: yes
+  become: yes
+
 ...

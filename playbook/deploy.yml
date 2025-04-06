@@ -1,0 +1,12 @@
+- name: Deploy Angular App
+  hosts: app_servers
+  become: yes
+  vars:
+    deploy_path: "/var/www/html"
+    angular_app_version: "{{ version | default('1.0.0') }}"
+    angular_app_artifact: "{{ artifact_path | default('/tmp/angular-app-1.0.0.tar.gz') }}"
+
+  roles:
+    - Angular
+    - Apache
+...

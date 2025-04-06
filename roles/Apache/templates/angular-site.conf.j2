@@ -1,6 +1,6 @@
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
-    DocumentRoot=/var/www/html
+    DocumentRoot=/var/www/html/{{ angular_app_version | default('current') }}
 
     <Directory /var/www/html>
         Options Indexes FollowSymLinks

@@ -1,43 +1,38 @@
 ---
 - name: Create deployment directory
   file:
-    path: "{{ deploy_path }}"
+    path: "/var/www/html/{{ angular_app_version }}"
     state: directory
     mode: '0755'
+  with_items:
+    - "/var/www/html"
+    - "/var/www/html/{{ angular_app_version }}"
+  become: yes
 
 - name: Create versions directory
   file:
-    path: "{{ deploy_path }}/versions/{{ build_version }}"
+    path: "/var/www/html/versions/{{ angular_app_version }}"
     state: directory
     mode: '0755'
+  become: yes
 
-- name: Copy artifact to server
-  delegate_to: localhost   # ✅ This runs the task on Jenkins (control node)
+- name: Copy artifact
   copy:
-    src: "{{ provided_artifact_name }}"
-    dest: "{{ deploy_path }}/{{ build_version }}/"
-    remote_src: yes  # Assuming artifact is on Jenkins server
+    src: "angular_build_{{ angular_version }}.tar.gz"
+    dest: "/tmp/angular_build_{{ angular_version }}.tar.gz"
 
-- name: Extract artifact to versioned directory
+- name: Extract Angular app archive
   unarchive:
-    src: "{{ artifact_path }}"
-    dest: "{{ deploy_path }}/versions/{{ current_version }}"
+    src: "/tmp/angular_build_{{ angular_version }}.tar.gz"
+    dest: "/var/www/html/{{ angular_app_version }}"
     remote_src: yes
-    creates: "{{ deploy_path }}/versions/{{ current_version }}"
+    become: yes
 
-- name: Update symlink to current version
+- name: Current/Update symlink to current version
   file:
-    src: "{{ deploy_path }}/versions/{{ current_version }}"
-    dest: "{{ app_symlink }}"
+    src: "/var/www/html/{{ angular_app_version }}"
+    dest: "/var/www/html/current"
     state: link
     force: yes
-
-- name: Set permissions for web content
-  file:
-    path: "{{ deploy_path }}"
-    state: directory
-    recurse: yes
-    owner: www-data
-    group: www-data
-    mode: '0755'
+  become: yes
 ...
