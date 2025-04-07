@@ -17,7 +17,7 @@ pipeline {
                 dir('angular-app') {
                     sh 'npm install'
                     sh 'npm run build'
-                    sh 'ls -la dist'
+                    sh 'ls -la dist/temp-angular'
                     sh "tar -czf ../angular-app-${params.VERSION}.tar.gz -C dist/temp-angular ."
                 }    
                 archiveArtifacts artifacts: "angular-app-${params.VERSION}.tar.gz", fingerprint: true
