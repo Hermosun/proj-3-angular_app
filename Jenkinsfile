@@ -45,7 +45,8 @@ pipeline {
                         env.VERSION_TO_DEPLOY = versionToDeploy
                     
                     // Copy the artifact to target server
-                    sh "scp angular-app-${versionToDeploy}.tar.gz user@app_server:/tmp/"
+                    sshagent(['app-server-ssh'])
+                    sh "scp angular-app-${versionToDeploy}.tar.gz ubuntu@app_server:/tmp/"
                     
                     // Run Ansible playbook
                     sh """
