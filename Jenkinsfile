@@ -14,9 +14,11 @@ pipeline {
                 expression { params.DEPLOY_TYPE == 'deploy' }
             }
             steps {
-                sh 'npm install'
-                sh 'npm run build --prod'
-                sh "tar -czf angular-app-${params.VERSION}.tar.gz -C dist/angular-app ."
+                dir('angular-app') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                    sh "tar -czf ../angular-app-${params.VERSION}.tar.gz -C dist/angular-app ."
+                }    
                 archiveArtifacts artifacts: "angular-app-${params.VERSION}.tar.gz", fingerprint: true
             }
         }
