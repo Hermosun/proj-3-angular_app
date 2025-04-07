@@ -1,0 +1,6 @@
+deploy_path: /var/www/my-angular-app
+rollback_version: "1.0.0" 
+angular_app_version: "1.0.1
+angular_app_artifact: "/tmp/angular-app-{{ angular_app_version }}.tar.gz"
+app_symlink: "{{ deploy_path }}/current"
+# app_symlink: /var/www/my-angular-app/current

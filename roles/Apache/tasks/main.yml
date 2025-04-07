@@ -18,6 +18,14 @@
   become: yes
   notify: Restart Apache
 
+- name: Set correct permissions on Apache virtual host file
+  file:
+    path: /etc/apache2/sites-available/angular-app.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+
 - name: Ensure Apache is running
   service:
     name: apache2

@@ -1,12 +1,16 @@
 ---
-- name: Create deployment directory
+- name: Create base deployment directory
+  file:
+    path: "/var/www/html/"
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: Create version directory
   file:
     path: "/var/www/html/{{ angular_app_version }}"
     state: directory
     mode: '0755'
-  with_items:
-    - "/var/www/html"
-    - "/var/www/html/{{ angular_app_version }}"
   become: yes
 
 - name: Create versions directory
@@ -18,8 +22,18 @@
 
 - name: Copy artifact
   copy:
-    src: "angular_build_{{ angular_version }}.tar.gz"
-    dest: "/tmp/angular_build_{{ angular_version }}.tar.gz"
+    src: "angular_build_{{ angular_app_version }}.tar.gz"
+    dest: "/tmp/angular_build_{{ angular_app_version }}.tar.gz"
+
+- name: Ensure the artifact is present
+  stat:
+    path: "/tmp/angular_build_{{ angular_version }}.tar.gz"
+  register: artifact_stat
+
+- name: Fail if artifact is missing
+  fail:
+    msg: "The build artifact {{ angular_version }}.tar.gz was not found!"
+  when: not artifact_stat.stat.exists
 
 - name: Extract Angular app archive
   unarchive:
@@ -27,6 +41,15 @@
     dest: "/var/www/html/{{ angular_app_version }}"
     remote_src: yes
     become: yes
+
+- name: Set correct permissions on the extracted app files
+  file:
+    path: "/var/www/html/{{ angular_app_version }}"
+    recurse: yes
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  become: yes
 
 - name: Current/Update symlink to current version
   file:

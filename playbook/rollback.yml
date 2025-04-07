@@ -25,14 +25,19 @@
 
     - name: Set correct permissions on the rolled back version
       file:
-        path: "{{ deploy_path }}"
+        path: "{{ deploy_path }}/versions/{{ rollback_version }}"
         state: directory
         recurse: yes
         owner: www-data
         group: www-data
         mode: '0755'
 
-    - name: Restart Apache to apply rollback
-      service:
-        name: apache2
-        state: restarted
+- name: Confirm before continuing
+  pause:
+    prompt: "Are you sure you want to rollback to version {{ rollback_version }}? Press Enter to continue or Ctrl+C to cancel"
+
+
+- name: Restart Apache to apply rollback
+  service:
+    name: apache2
+    state: restarted
