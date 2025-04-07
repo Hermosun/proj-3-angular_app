@@ -40,22 +40,26 @@ pipeline {
             }
         }
         
-        stage('Deploy') {
-            steps {
-                script {
-                    def versionToDeploy = params.DEPLOY_TYPE == 'deploy' ? params.VERSION : params.ROLLBACK_VERSION
-                        env.VERSION_TO_DEPLOY = versionToDeploy
-                    
-                    // Copy the artifact to target server
-                    sshagent(['app-server-ssh'])
-                    sh "scp angular-app-${versionToDeploy}.tar.gz ubuntu@app_server:/tmp/"
-                    
-                    // Run Ansible playbook
-                    sh """
+stage('Deploy') {
+    steps {
+        script {
+            def versionToDeploy = params.DEPLOY_TYPE == 'deploy' ? params.VERSION : params.ROLLBACK_VERSION
+            env.VERSION_TO_DEPLOY = versionToDeploy
+
+            sshagent(['app-server-ssh']) {
+                sh """
+                    echo "Deploying app..."
+                    scp angular-app-${versionToDeploy}.tar.gz ubuntu@app_server:/tmp/
+                    ssh ubuntu@app_server "tar -xzf /tmp/angular-app-${versionToDeploy}.tar.gz -C /var/www/html/"
+                    ssh ubuntu@app_server "sudo systemctl restart nginx"
+                    ssh ubuntu@app_server "sudo systemctl restart angular-app"
+                """
+
+                // Run Ansible playbook
+                sh """
                     cd /path/to/ansible
                     ansible-playbook playbooks/deploy.yml -i inventory -e "version=${versionToDeploy}" -e "artifact_path=/tmp/angular-app-${versionToDeploy}.tar.gz"
-                    """
-                }
+                """
             }
         }
     }
