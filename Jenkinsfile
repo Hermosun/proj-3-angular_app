@@ -50,7 +50,7 @@ pipeline {
                     sshagent(['app-server-ssh']) {
                         sh """
                             echo "Deploying app..."
-                            scp angular-app-${versionToDeploy}.tar.gz ubuntu@172.31.35.151:/tmp/
+                            scp angular-app-${versionToDeploy}.tar.gz ubuntu@13.41.194.16:/tmp/
                             ssh ubuntu@app_server "tar -xzf /tmp/angular-app-${versionToDeploy}.tar.gz -C /var/www/html/"
                             ssh ubuntu@app_server "sudo systemctl restart nginx"
                             ssh ubuntu@app_server "sudo systemctl restart angular-app"
