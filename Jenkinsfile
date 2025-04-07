@@ -40,11 +40,11 @@ pipeline {
             }
         }
         
-stage('Deploy') {
-    steps {
-        script {
-            def versionToDeploy = params.DEPLOY_TYPE == 'deploy' ? params.VERSION : params.ROLLBACK_VERSION
-            env.VERSION_TO_DEPLOY = versionToDeploy
+        stage('Deploy') {
+            steps {
+                script {
+                    def versionToDeploy = params.DEPLOY_TYPE == 'deploy' ? params.VERSION : params.ROLLBACK_VERSION
+                         env.VERSION_TO_DEPLOY = versionToDeploy
 
             sshagent(['app-server-ssh']) {
                 sh """
@@ -63,4 +63,5 @@ stage('Deploy') {
             }
         }
     }
-}
+    }   
+ }
