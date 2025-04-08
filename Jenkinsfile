@@ -51,7 +51,6 @@ pipeline {
                         sh """
                             echo "Deploying app..."
                             scp -o StrictHostKeyChecking=no angular-app-1.0.1.tar.gz ubuntu@13.41.194.16:/tmp/
-                            ssh ubuntu@app_server "tar -xzf /tmp/angular-app-${versionToDeploy}.tar.gz -C /var/www/html/"
                         """
 
                         // Run Ansible playbook
